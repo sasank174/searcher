@@ -241,6 +241,31 @@
             user-select: none;
         }
 
+        .check-field a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 12px 14px;
+            background: #fff;
+            color: #7f90aa;
+            font-weight: 700;
+            cursor: pointer;
+            text-decoration: none;
+            border: 1px solid transparent;
+            border-radius: 14px;
+            min-width: 170px;
+            box-shadow: 0 14px 28px rgba(10, 102, 194, 0.22);
+        }
+
+        .check-field a:hover,
+        .check-field a:focus-visible {
+            color: var(--accent);
+            border-color: var(--focus);
+            outline: none;
+            transform: translateY(-1px);
+        }
+
         input[type="checkbox"] {
             appearance: none;
             -webkit-appearance: none;
@@ -623,6 +648,16 @@
                     <div class="check-field">
                         <input type="checkbox" name="hasVerification" id="hasVerification">
                         <label for="hasVerification">Has verification</label>
+                    </div>
+                </div>
+
+                <div class="inline compact">
+                    <div class="check-field">
+                        <a href="https://www.linkedin.com/search/results/content/?keywords=%22walk%20in%20interview%22%20%22Data%20Engineer%22%20Bangalore&origin=CLUSTER_EXPANSION&datePosted=%5B%22past-24h%22%5D">walk in interview</a>
+                    </div>
+
+                    <div class="check-field">
+                        <a href="https://www.linkedin.com/search/results/content/?keywords=%22walk-in%20drive%22%20%22Data%20Engineer%22%20Bangalore&origin=CLUSTER_EXPANSION&datePosted=%5B%22past-24h%22%5D">walk in drive</a>
                     </div>
                 </div>
             </form>
