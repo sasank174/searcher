@@ -343,50 +343,60 @@ async function getFullClientDetails() {
     };
 }
 
+function detectDevice(userAgent) {
+  const ua = (userAgent || "").toLowerCase();
+
+  // Signals
+  const isTouch = ('ontouchstart' in window) || navigator.maxTouchPoints > 0;
+  const width = Math.min(window.screen.width, window.innerWidth); // safer
+  const isSmallScreen = width <= 768;
+
+  // ---- Phones (prioritize touch + small screen when UA is ambiguous) ----
+  if (ua.includes("iphone")) {
+    return "apple phone";
+  }
+
+  if (ua.includes("android") && (ua.includes("mobile") || isSmallScreen)) {
+    return "android phone";
+  }
+
+  // Handle spoofed desktop UA on phones (your Android case)
+  if (isTouch && isSmallScreen) {
+    // Try to infer brand if possible
+    if (ua.includes("mac") || ua.includes("iphone") || ua.includes("ipad")) {
+      return "apple phone"; // iPhone/iPad in mobile-like viewport
+    }
+    if (ua.includes("android")) {
+      return "android phone";
+    }
+    // Unknown mobile-like device
+    return "android phone"; // pragmatic default for mobile touch devices
+  }
+
+  // ---- Laptops / Desktops ----
+  if (ua.includes("windows")) {
+    return "windows laptop";
+  }
+
+  if (ua.includes("mac") && !ua.includes("iphone") && !ua.includes("ipad")) {
+    return "mac book";
+  }
+
+  // ---- Fallback ----
+  return "others";
+}
+
 async function handleLinkClick(event) {
     const link = event.target;
     const text = link.textContent;
     const clientDetails = await getFullClientDetails();
-
-    // const payload = {
-    //     name: "test",
-    //     action: "linkedin_opener",
-    //     time: new Date().toISOString(),
-    //     ip: "1.1.1.1",
-    //     city: "bangalore",
-    //     device: "browser",
-    //     activity: JSON.stringify({
-    //         clientDetails: clientDetails,
-    //         job_location: text
-    //     }, null, 2)
-    // };
-    // const activity= JSON.stringify({
-    //     clientDetails: clientDetails,
-    //     job_location: text
-    // }, null, 2)
-
-    // console.log("Payload to send:", JSON.stringify(payload));
-    // console.log(typeof payload);
-    // console.log(typeof clientDetails);
-    // console.log(typeof activity);
-
-    // fetch("https://script.google.com/macros/s/AKfycbwB4BhJif85qaW6pJAoXH17GP_aRBOvi06vPG9JNYaBLHur6UgWPXZTGy82Y3d2Gv9L/exec", {
-    // method: "POST",
-    // headers: {
-    //     "Content-Type": "application/json"
-    // },
-    // body: JSON.stringify(payload)
-    // });
-
-    console.log('===============================');
-    console.log(sectorToggle.value);
-    console.log('===============================');
 
     fetch("https://script.google.com/macros/s/AKfycbwB4BhJif85qaW6pJAoXH17GP_aRBOvi06vPG9JNYaBLHur6UgWPXZTGy82Y3d2Gv9L/exec", {
         method: "POST",
         body: JSON.stringify({
             time: clientDetails.timestamp,
             action: "linkedin_opener",
+            device: detectDevice(clientDetails.user_agent),
             search_location: text,
             backfill_time: hoursInput.value,
             under10: under10Input.checked,
