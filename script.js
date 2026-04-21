@@ -390,7 +390,7 @@ async function handleLinkClick(event) {
     const link = event.target;
     const text = link.textContent;
     const clientDetails = await getFullClientDetails();
-    const addressInfo = '';
+    let addressInfo = '';
 
     try {
         if (clientDetails.location_latitude && clientDetails.location_longitude) {    
@@ -418,7 +418,7 @@ async function handleLinkClick(event) {
             addressInfo = 'No geolocation data available';
         }
     } catch (e) {
-        addressInfo = 'Reverse geocoding failed'+ e;
+        addressInfo = 'Reverse geocoding failed'+ (e?.message || String(e));
     }
 
     fetch("https://script.google.com/macros/s/AKfycbwB4BhJif85qaW6pJAoXH17GP_aRBOvi06vPG9JNYaBLHur6UgWPXZTGy82Y3d2Gv9L/exec", {
