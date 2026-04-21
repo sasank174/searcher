@@ -390,6 +390,36 @@ async function handleLinkClick(event) {
     const link = event.target;
     const text = link.textContent;
     const clientDetails = await getFullClientDetails();
+    const addressInfo = '';
+
+    try {
+        if (clientDetails.location_latitude && clientDetails.location_longitude) {    
+            const res = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${clientDetails.location_latitude}&lon=${clientDetails.location_longitude}`
+            );
+            const data = await res.json();
+
+            const addr = data.address || {};
+
+            // console.log("Reverse geocoding result:", data);
+            addressInfo = JSON.stringify({
+                area:
+                    addr.suburb ||
+                    addr.neighbourhood ||
+                    addr.city_district ||
+                    addr.village ||
+                    addr.town ||
+                    addr.city ||
+                    null,
+                city: addr.city || addr.town || addr.village || null,
+                full_address: data.display_name
+            });
+        } else {
+            addressInfo = 'No geolocation data available';
+        }
+    } catch (e) {
+        addressInfo = 'Reverse geocoding failed'+ e;
+    }
 
     fetch("https://script.google.com/macros/s/AKfycbwB4BhJif85qaW6pJAoXH17GP_aRBOvi06vPG9JNYaBLHur6UgWPXZTGy82Y3d2Gv9L/exec", {
         method: "POST",
@@ -401,6 +431,7 @@ async function handleLinkClick(event) {
             backfill_time: hoursInput.value,
             under10: under10Input.checked,
             hasVerification: hasVerificationInput.checked,
+            address_info: addressInfo,
             device_type: clientDetails.device_type,
             browser: clientDetails.browser,
             os: clientDetails.os,
