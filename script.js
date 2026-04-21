@@ -325,7 +325,7 @@ async function getFullClientDetails() {
     }
 
     return {
-        timestamp: new Date().toISOString(),
+        timestamp: new Date().toLocaleString("en-IN", {timeZone: "Asia/Kolkata"}), 
         device_type: deviceType,
         browser: browser,
         os: os,
